@@ -1,0 +1,2 @@
+Dismount-SPContentDatabase WSS_Content
+Mount-SPContentDatabase "MyDatabase" -DatabaseServer "MyServer" -WebApplication https://sitename
