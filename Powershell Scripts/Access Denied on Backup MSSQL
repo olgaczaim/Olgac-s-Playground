@@ -1,0 +1,6 @@
+Cannot open MSSQL Backup Directory
+Look in Windows Services. Start > Administration > Services
+
+Find the Service in the list called: SQL Server (MSSQLSERVER) look for the "Log On As" column (need to add it if it doesn't exist in the list).
+
+This is the account you need to give permissions to the directory, right click in explorer > properties > Shares (And Security)
