@@ -1,0 +1,12 @@
+Sharepoint 2016 PreRequisite Installer Fail
+
+BEFORE running the prerequisite installer, go into IE/Internet Options/Security/Custom Level and enable file downloads.
+Also need to go into server manager and disable IE Enhanced security.
+
+----------
+Manuel Pre Installer
+Check prefix **** for command
+C:\Source\prerequisiteinstaller.exe /?
+
+Check log file for download urls
+C:\Source\prerequisiteinstaller.exe /****:C:\Source\prerequisiteinstallerfiles\****.exe
