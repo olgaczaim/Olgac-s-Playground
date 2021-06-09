@@ -21,9 +21,19 @@ exports.handler = function(event, context, callback) {
     callback(err, null);
    }
    else {
+    var curdate = new Date();
 
+var validuntill = new Date(data.Item['validuntil']);
+ var isvalid = curdate.getTime() <= validuntill.getTime(); 
+    
+    
+    const res = {
+     valid : data.Item['validuntil'],
+     date : curdate,
+     durum: isvalid
+    };
     var response = {
-     'body': JSON.stringify(data),
+     'body': JSON.stringify(res),
      "headers": {
       "Content-Type": "application/json"
      },
@@ -36,7 +46,7 @@ exports.handler = function(event, context, callback) {
  else {
   const user = {
    Item: {
-    res:'missing parameters'
+    res: '404'
    }
   };
   var response = {
