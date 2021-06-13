@@ -30,7 +30,10 @@ var validuntill = new Date(data.Item['validuntil']);
     const res = {
      valid : data.Item['validuntil'],
      date : curdate,
-     durum: isvalid
+     durum: isvalid,
+     envanter: data.Item['envanter'],
+     risk: data.Item['risk'],
+     denetim: data.Item['denetim']
     };
     var response = {
      'body': JSON.stringify(res),
@@ -60,3 +63,4 @@ var validuntill = new Date(data.Item['validuntil']);
  }
 
 }
+
