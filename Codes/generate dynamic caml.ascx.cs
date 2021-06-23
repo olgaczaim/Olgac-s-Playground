@@ -1,0 +1,49 @@
+enum MergeType { Or, And };
+
+private static string MergeCAMLConditions(List<string> conditions, MergeType type)
+{
+    if (conditions.Count == 0) return "";
+
+    string typeStart = (type == MergeType.And ? "<And>" : "<Or>");
+    string typeEnd = (type == MergeType.And ? "</And>" : "</Or>");
+
+    // Build hierarchical structure
+    while (conditions.Count >= 2)
+    {
+        List<string> complexConditions = new List<string>();
+
+        for (int i = 0; i < conditions.Count; i += 2)
+        {
+            if (conditions.Count == i + 1) // Only one condition left
+                complexConditions.Add(conditions[i]);
+            else // Two condotions - merge
+                complexConditions.Add(typeStart + conditions[i] + conditions[i + 1] + typeEnd);
+        }
+
+        conditions = complexConditions;
+    }
+
+    return conditions[0];
+}
+        
+List<string> conditions = new List<string>();        
+//Define conditions
+conditions.Add("<Eq><FieldRef Name='xxxx' /><Value Type='Text'>yyyyyy</Value></Eq>");
+
+
+//call merged
+string merged = MergeCAMLConditions(conditions, MergeType.And);
+        
+        
+IEnumerable<SPListItem> items = null;
+var spQuery = new SPQuery();
+var queryString = new StringBuilder();
+
+SPList formList = currentWeb.Lists["ListName"];
+
+queryString.Append("<Where>");
+queryString.Append(merged);
+queryString.Append("</Where>");
+
+spQuery.Query = queryString.ToString();
+items = formList.GetItems(spQuery).Cast<SPListItem>();
