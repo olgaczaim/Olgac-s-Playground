@@ -1,1 +1,113 @@
+CodeToTransport.bat
+cd /d %~dp0
+powershell -noexit -file ".CodeToTransport.ps1" "%CD%"
+pause
+
+
+---------
+.CodeToTransport.ps1
+Add-PsSnapin Microsoft.SharePoint.PowerShell
+function Get-ScriptDirectory
+{
+ $Invoke = (Get-Variable MyInvocation -Scope 1).Value
+ Split-Path $Invoke.MyCommand.Path
+}
+
+function Deploy-Solution{
+param(
+[string]$SourceLocation,
+[string]$name)
+
+$Slname = $name
+$SolutionPath = Join-Path ($SourceLocation) $Slname
+echo "Extracting information from $SourceLocation"
+
+#Admin service
+$AdminServiceName = "SPAdminV4"
+$IsAdminServiceWasRunning = $true;
+
+if ($(Get-Service $AdminServiceName).Status -eq "Stopped")
+{
+    $IsAdminServiceWasRunning = $false;
+    Start-Service $AdminServiceName
+   Write-Host ' Service Started as it was stopped '
+}
+
+#Uninstall
+Write-Host ‘Uninstall solution from the FRAM...'
+
+$Solution = Get-SPSolution | ? {($_.Name -eq $Slname) -and ($_.Deployed -eq $true)}
+
+if ($Solution -ne $null)
+{
+    if($Solution.ContainsWebApplicationResource)
+    {
+        Uninstall-SPSolution $Slname -AllWebApplications -Confirm:$false
+    }
+    else
+    {
+        Uninstall-SPSolution $Slname -Confirm:$false
+    }
+}
+
+while ($Solution.JobExists)
+{
+    Start-Sleep 2
+}
+
+Write-Host ‘Solution uninstalled successfully'
+
+Write-Host ‘Remove solution from FARM ...'
+
+if ($(Get-SPSolution | ? {$_.Name -eq $Slname}).Deployed -eq $false)
+{
+    Remove-SPSolution $Slname -Confirm:$false
+
+Write-Host 'Solution—Removed Successfully'
+}
+
+Write-Host 'Add Solution to the FARM ...'
+
+Add-SPSolution $SolutionPath  | Out-Null
+
+Write-Host ‘Solution—added Successfully'
+
+Write-Host 'Deploy Solution to the FARM environment...'
+
+$Solution = Get-SPSolution | ? {($_.Name -eq $Slname) -and ($_.Deployed -eq $false)}
+
+#use '-force' paramater to install all commands in this if statement
+
+if(($Solution -ne $null) -and ($Solution.ContainsWebApplicationResource))
+{
+Install-SPSolution $Slname -WebApplication 498d1245-d750-463a-a063-25010b57d722 -GACDeployment -Force -Confirm:$false
+}
+else
+{
+Install-SPSolution $Slname -GACDeployment -Force -Confirm:$false
+}
+
+while ($Solution.Deployed -eq $false)
+{
+    Start-Sleep 2
+}
+
+Write-Host 'Solution deployed successfully to the FARM environment'
+
+if (-not $IsAdminServiceWasRunning)
+{
+    Stop-Service $AdminServiceName
+}
+}
+
+#read the current physical path of the script
+$currentPhysicalPath = Get-ScriptDirectory
+
+#Iterate through all .wsp files in the current Physical Path to deploy solution
+get-childitem $currentPhysicalPath -include *.wsp -recurse | foreach ($_) {Deploy-Solution $currentPhysicalPath $_.name}
+
+#Remove SharePoint Snapin
+Remove-PsSnapin Microsoft.SharePoint.PowerShell
+
+Echo Finish
 
