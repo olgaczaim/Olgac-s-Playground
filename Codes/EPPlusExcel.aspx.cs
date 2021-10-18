@@ -403,17 +403,18 @@ namespace WebApplication13
                 
                 curr++;
 
-                worksheet.Column(11).Width = 90;
+                worksheet.Column(11).Width = 11;
+                worksheet.Column(12).Width = 12;
                 //worksheet.Cells["C5"].AutoFilter = true;
                 //worksheet.Cells["F5"].AutoFilter = true;
                 //worksheet.Cells["I5"].AutoFilter = true;
                 //worksheet.Cells["K5"].AutoFilter = true;
-               
-                
-                worksheet.Cells["K4:L4"].Style.WrapText = true;
-                worksheet.Cells["L1"].AutoFitColumns();
-                worksheet.Cells["L3"].AutoFitColumns();
-                worksheet.Cells["K3"].AutoFitColumns();
+
+
+                // worksheet.Cells["K4:L4"].Style.WrapText = true;
+                //worksheet.Cells["L1"].AutoFitColumns();
+                //worksheet.Cells["L3"].AutoFitColumns();
+                //worksheet.Cells["K3"].AutoFitColumns();
                 worksheet.Row(3).Height = 30;
                 worksheet.Row(4).Height = 30;
                 //byte[] bin = excelPackage.GetAsByteArray();
