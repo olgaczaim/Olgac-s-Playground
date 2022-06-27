@@ -1,0 +1,5 @@
+//get sp timerjob
+
+Get-SPTimerJob -WebApplication "*****" | select ID,Name, DisplayName
+Get-SPTimerJob -Identity 87f1ae66-159a-4ea6-b0c4-a2114236f831 | Format-Table DisplayName,Id,LastRunTime,Status
+(Get-SPTimerJob -Identity 87f1ae66-159a-4ea6-b0c4-a2114236f831).HistoryEntries | Format-Table -Property Status,StartTime,EndTime,ErrorMessage
