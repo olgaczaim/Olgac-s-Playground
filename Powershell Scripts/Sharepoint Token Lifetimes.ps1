@@ -129,3 +129,15 @@ $cs.Update()
 #TotalMinutes      : 1440
 #TotalSeconds      : 86400
 #TotalMilliseconds : 86400000
+
+
+
+
+
+
+
+#for user profile sync groups custom token service config
+$STSConfig = Get-SPSecurityTokenServiceConfig
+$STSConfig.WindowsTokenLifetime = (New-TimeSpan -minutes 60)
+$STSConfig.LogonTokenCacheExpirationWindow = (New-TimeSpan -minutes 30)
+$STSConfig.Update()
