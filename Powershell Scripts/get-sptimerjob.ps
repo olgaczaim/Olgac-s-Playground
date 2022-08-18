@@ -3,3 +3,22 @@
 Get-SPTimerJob -WebApplication "*****" | select ID,Name, DisplayName
 Get-SPTimerJob -Identity 87f1ae66-159a-4ea6-b0c4-a2114236f831 | Format-Table DisplayName,Id,LastRunTime,Status
 (Get-SPTimerJob -Identity 87f1ae66-159a-4ea6-b0c4-a2114236f831).HistoryEntries | Format-Table -Property Status,StartTime,EndTime,ErrorMessage
+
+
+$StartTime = "8/17/2022 6:00 PM"
+$EndTime = "8/17/2022 6:30 PM"
+$OutPutFile="D:\FailedJobHistoryRpt.csv"
+$WebApp = Get-SPTimerJob
+$Results = $WebApp.HistoryEntries | where { ($_.StartTime -ge  $StartTime) -and ($_.EndTime -le $EndTime) } |  select JobDefinitionId,JobDefinitionTitle,WebApplicationId,WebApplicationName,ServerName,StartTime,EndTime,DatabaseName,ErrorMessage
+$Results | Export-Csv $OutPutFile -NoType
+write-host "Failed Timer jobs history Exported to CSV!" -F Green
+
+#by web app
+$WebAppURL = "SharePoint.onmicrosoft.com"
+$StartTime = "8/18/2022 6:00 PM"
+$EndTime = "8/18/2022 6:30 PM"
+#Get all timer jobs associated with a web application
+$WebApp = Get-SPWebApplication $WebAppURL
+$Results = $WebApp.JobHistoryEntries | where { ($_.StartTime -ge  $StartTime) -and ($_.EndTime -le $EndTime) } |  Select JobDefinitionTitle,WebApplicationName,ServerName,Status,StartTime,EndTime
+#Send results to Grid view    
+$Results | Out-GridView
