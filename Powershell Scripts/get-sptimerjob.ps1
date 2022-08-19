@@ -89,6 +89,3 @@ $Results = $Timerjob.HistoryEntries  |
  
 #Send results to Grid view   
 $Results | Out-GridView
-
-
-#Read more: https://www.sharepointdiary.com/2015/09/get-timer-job-history-using-powershell.html#ixzz7cOR9QnnN
