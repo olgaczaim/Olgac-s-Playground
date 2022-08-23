@@ -83,3 +83,10 @@ $Results = $Timerjob.HistoryEntries  |
 
 #Send results to Grid view   
 $Results | Out-GridView
+
+#for csv result
+#$OutPutFile="C:\script\FailedJobHistoryRpt.csv"
+#$Results | Export-Csv $OutPutFile -NoType
+
+#for failed jobs
+#-and ($_.Status -ne 'Succeeded')
