@@ -85,7 +85,7 @@ $Results = $Timerjob.HistoryEntries  |
 $Results | Out-GridView
 
 #for csv result
-#$OutPutFile="C:\script\FailedJobHistoryRpt.csv"
+#$OutPutFile="C:\script\TimerJobHistory.csv"
 #$Results | Export-Csv $OutPutFile -NoType
 
 #for failed jobs
