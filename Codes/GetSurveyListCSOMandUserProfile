@@ -1,0 +1,110 @@
+using CsvHelper;
+using Microsoft.Office.Server;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.UserProfiles;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace GetSPSurveyResultWithUP
+{
+    public class Result
+    {
+        public string q1 { get; set; }
+        public string q2 { get; set; }        
+        public string name { get; set; }
+        public string title { get; set; }
+        public string department { get; set; }
+        public string group { get; set; }
+        public string date { get; set; }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            CultureInfo trCulture = CultureInfo.CreateSpecificCulture("tr-TR");
+
+            string siteUrl = "contonso.com";
+            string surveyListTitle = "surveyListTitle";
+
+            using (ClientContext context = new ClientContext(siteUrl))
+            {
+                context.Credentials = new NetworkCredential("username", "pass", "domain");
+
+                List surveyList = context.Web.Lists.GetByTitle(surveyListTitle);
+                CamlQuery camlQuery = new CamlQuery();
+                camlQuery.ViewXml = "<Query><OrderBy><FieldRef Name='ID' Ascending='False' /></OrderBy></Query>";
+
+                ListItemCollection items = surveyList.GetItems(camlQuery);
+                context.Load(items);
+                context.ExecuteQuery();
+
+                List<Result> results = new List<Result>();
+
+                foreach (ListItem item in items)
+                {
+
+                    string q1 = (string)item["q1"];
+                    string q2 = (string)item["q2"];
+                    string created = Convert.ToDateTime(item["Created"]).ToString("dd.MM.yyyy HH:mm");
+
+                    FieldUserValue author = (FieldUserValue)item["Author"];
+                    User user = context.Web.EnsureUser(author.LookupValue);
+                    context.Load(user);
+                    context.ExecuteQuery();
+
+                    PersonProperties personProperties = getUserProperty(context, user);
+
+                    string title = personProperties.UserProfileProperties["Title"].ToString();
+                    string dep = personProperties.UserProfileProperties["Department"].ToString();
+                    string dn = getDN(personProperties.UserProfileProperties["SPS-DistinguishedName"].ToString());
+                    string name = personProperties.UserProfileProperties["PreferredName"].ToString();
+
+                    Result resdet = new Result();
+                    resdet.name = name;
+                    resdet.department = dep;
+                    resdet.group = dn;
+                    resdet.title = title;
+                    resdet.q1 = q1;
+                    resdet.q2 = q2;
+                    resdet.date = created;
+                    results.Add(resdet);
+                    
+                }
+
+                using (var writer = new StreamWriter("c:\\aa\\bb.csv"))
+                using (var csv = new CsvWriter(writer, trCulture))
+                {
+                    csv.WriteRecords(results);
+                }
+            }
+            Console.WriteLine("Done!");
+            Console.ReadLine();
+        }
+
+        static PersonProperties getUserProperty(ClientContext context, User user)
+        {
+            PeopleManager peopleManager = new PeopleManager(context);
+            PersonProperties personProperties = peopleManager.GetPropertiesFor(user.LoginName);
+            context.Load(personProperties, p => p.UserProfileProperties);
+            context.ExecuteQuery();
+            return personProperties;
+        }
+
+        static string getDN(string dn)
+        {
+            string pattern = @"OU=([^,]+)";
+            Regex regex = new Regex(pattern);
+            MatchCollection matches = regex.Matches(dn);
+            return string.Join(",", from Match match in matches select match.Groups[1].Value);
+        } 
+    }
+}
+
