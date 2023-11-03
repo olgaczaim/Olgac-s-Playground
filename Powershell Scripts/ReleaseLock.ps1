@@ -30,3 +30,28 @@ if ($File.CheckOutType -ne "None")
      #$File.ReleaseLock($File.LockId)
      #Write-host "Released the lock!"
  }
+
+
+<# another one #>
+<#
+Add-PSSnapin Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue
+
+$web = Get-SPWeb http://contonso/site/
+$list = $web.Lists[“Documents”]
+$item = $list.GetItemById(15)
+$file = $item.File
+$file
+
+$userId = $file.LockedByUser.ID
+$user = $web.AllUsers.GetByID($userId)
+$impSite= New-Object Microsoft.SharePoint.SPSite($web.Url, $user.UserToken);
+
+$impWeb = $impSite.OpenWeb();
+$impList = $impWeb.Lists[$list.Title]
+$impItem = $impList.GetItemById($item.ID)
+$impFile = $impItem.File
+
+$impFile.ReleaseLock($impFile.LockId)
+$file
+
+#>
