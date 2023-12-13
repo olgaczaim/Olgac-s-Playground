@@ -1,0 +1,10 @@
+First go here to download PsTools. Extract it to a folder on your desktop.
+https://learn.microsoft.com/en-us/sysinternals/downloads/psexec
+
+Open Start and type cmd. Right-click the program and choose to run as administrator.
+Navigate to the folder where you extracted the tools by typing "cd C:\Users\Username\Desktop\Pstools", replace Username with your username and Pstools with the folder where you extracted the tools.
+When you have navigated to the correct folder, copy the following command without the quotes: "psexec.exe -i -s %windir%\system32\mmc.exe /s taskschd.msc".
+Open the command window and right click, choose paste. Press enter.
+Navigate to Task Scheduler Library -> Microsoft -> Windows -> UpdateOrchestrator.
+Right click the task called Reboot and click on Disable.
+The task should now be disabled.
