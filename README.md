@@ -145,15 +145,11 @@ For example, if you want to query all files and folders in your document library
 |2|26/12/2010 11:32:18|DEMO\dev|26/12/2010 20:33:4|DEMO\dev| | |Folder 2|
 |3|26/12/2010 11:32:33|DEMO\dev|26/12/2010 11:32:33|DEMO\dev| | |Folder A|
 |4|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
-|5|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
-|6|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 1.docx|
-|7|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 5.docx|
-|8|26/10/2011 20:34:49|DEMO\dev|26/10/2011 20:34:49|DEMO\dev| | |Test document 6.docx|
-|9|26/10/2011 20:34:49|DEMO\dev|26/10/2011 20:34:49|DEMO\dev| | |Test document 7.docx|
-|10|30/01/2012 8:50:02|DEMO\dev|30/01/2012 8:50:02|DEMO\dev| | |Folder A1|
-|11|31/01/2012 5:47:24|DEMO\dev|31/01/2012 5:47:24|DEMO\dev| | |Test Administration document 8.docx|
-|12|1/02/2012 5:42:36|DEMO\dev|1/02/2012 5:42:36|DEMO\dev| | |Folder A11|
-|13|1/02/2012 5:43:07|DEMO\dev|1/02/2012 5:43:07|DEMO\dev| | |Test Administration document 9.docx|
+|5|26/10/2011 20:34:49|DEMO\dev|26/10/2011 20:34:49|DEMO\dev| | |Test document 7.docx|
+|6|30/01/2012 8:50:02|DEMO\dev|30/01/2012 8:50:02|DEMO\dev| | |Folder A1|
+|7|31/01/2012 5:47:24|DEMO\dev|31/01/2012 5:47:24|DEMO\dev| | |Test Administration document 8.docx|
+|8|1/02/2012 5:42:36|DEMO\dev|1/02/2012 5:42:36|DEMO\dev| | |Folder A11|
+|9|1/02/2012 5:43:07|DEMO\dev|1/02/2012 5:43:07|DEMO\dev| | |Test Administration document 9.docx|
 
 You can always add a Query element in the View element and specify a Where clause to add an extra filter to the query, or an OrderBy clause to sort the result.
 
@@ -190,10 +186,23 @@ query.ViewXml = "<View Scope='RecursiveAll'>"
 	   + "</View>";
 
 ```
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|2|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
+|3|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 1.docx|
+|4|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 5.docx|
 
 If you want to retrieve the content of a specific folder, i.e files and folders, you have to add the relative URL to that folder to the **FolderServerRelativeUrl** property of the query instance:
 
 `query.FolderServerRelativeUrl = "/Shared Documents/Folder 1";`
+
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|2|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
+|3|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Folder A|
+|4|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Folder B|
 
 If you only want to see the files of a specific sub folder, you have to set the **Scope** attribute of the **ViewXml** property to **FilesOnly**:
 
@@ -202,6 +211,10 @@ query.ViewXml = "<View Scope='FilesOnly' />";
 query.FolderServerRelativeUrl = "/Shared Documents/Folder 1";
 
 ```
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|2|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
 
 Of course you can also query all files in a specific sub folder and its underlying sub folders. In that case you also have to specify the relative URL to the folder, but you also have to set the **Scope** attribute of the **ViewXml** property to **Recursive**:
 
@@ -210,6 +223,12 @@ query.ViewXml = "<View Scope='Recursive' />";
 query.FolderServerRelativeUrl = "/Shared Documents/Folder 1";
 
 ```
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|2|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
+|3|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Administration Document 1.docx|
+|4|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Administration Document 2.docx|
 
 If you want to retrieve all files AND folders from a specific folder and its underlying sub folders, you have to set the **Scope** attribute of the **ViewXml** property to **RecursiveAll**: 
 
@@ -218,4 +237,14 @@ query.ViewXml = "<View Scope='RecursiveAll' />";
 query.FolderServerRelativeUrl = "/Shared Documents/Folder 1";
 
 ```
+
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|2|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
+|3|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Folder A1|
+|4|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Administration Document 1.docx|
+|5|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Folder A11|
+|6|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Administration Document 2.docx|
+
 [Referance](https://karinebosch.wordpress.com/2012/02/03/caml-and-the-client-object-model/ "Referance")
