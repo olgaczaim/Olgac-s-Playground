@@ -99,6 +99,13 @@ query.ViewXml = "<View>"
 
 SharePoint will return a boolean indicating whether the list item has attachments or not.
 
+| Title  | User | Attachments | ID | Created | Modified |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|Test 1|Karine Bosch|False|1|9/01/2011 14:40:21|27/08/2011 10:46:33|
+|Test 2|Tom Van Gaever|False|2|9/01/2011 14:40:30|26/10/2011 19:17:02|
+|Test 3|Karine Bosch|False|3|9/01/2011 14:42:59|26/10/2011 19:16:29|
+|Test 4|Patricia Liefermans|True|4|23/10/2011 10:36:32|5/11/2011 6:59:23|
+
 The attechments are not stored in the list item itself, but are stored in a sub folder of the list. More specifically, the list contains a folder named Attachments and if a list item has one or more attachments, a folder is created based on the ID of the list item. This sub folder will then contain the attachment(s). The URL of the attachment is not stored in the list item itself.
 
 CAML contains an option IncludeAttachmentURLs that can be used to retreive the URL of the attachment(s), together with the other properties of the list item. It works on the server side SPQuery and with the `<QueryOptions>` node of the GetListItems method of the Lists.asmx web service , but it doesn’t seem to be available with the CamlQuery object of the .NET Client Object Model.
@@ -131,6 +138,23 @@ For example, if you want to query all files and folders in your document library
 
 `query.ViewXml = "<View Scope='RecursiveAll'></View>";`
 
+
+|ID|Created|Author|Modified|Editor|CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+| 1 | 26/12/2010 11:32:10 | DEMO\dev | 26/12/2010 11:32:10 | DEMO\dev| | |Folder 1 |
+|2|26/12/2010 11:32:18|DEMO\dev|26/12/2010 20:33:4|DEMO\dev| | |Folder 2|
+|3|26/12/2010 11:32:33|DEMO\dev|26/12/2010 11:32:33|DEMO\dev| | |Folder A|
+|4|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 2.docx|
+|5|26/10/2011 20:33:17|DEMO\dev|26/10/2011 20:33:17|DEMO\dev| | |Test document 3.docx|
+|6|26/10/2011 20:33:44|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 1.docx|
+|7|26/10/2011 20:34:09|DEMO\dev|26/10/2011 20:33:4|DEMO\dev| | |Test document 5.docx|
+|8|26/10/2011 20:34:49|DEMO\dev|26/10/2011 20:34:49|DEMO\dev| | |Test document 6.docx|
+|9|26/10/2011 20:34:49|DEMO\dev|26/10/2011 20:34:49|DEMO\dev| | |Test document 7.docx|
+|10|30/01/2012 8:50:02|DEMO\dev|30/01/2012 8:50:02|DEMO\dev| | |Folder A1|
+|11|31/01/2012 5:47:24|DEMO\dev|31/01/2012 5:47:24|DEMO\dev| | |Test Administration document 8.docx|
+|12|1/02/2012 5:42:36|DEMO\dev|1/02/2012 5:42:36|DEMO\dev| | |Folder A11|
+|13|1/02/2012 5:43:07|DEMO\dev|1/02/2012 5:43:07|DEMO\dev| | |Test Administration document 9.docx|
+
 You can always add a Query element in the View element and specify a Where clause to add an extra filter to the query, or an OrderBy clause to sort the result.
 
 If you want to query only the folders, you have to add an extra where clause:
@@ -145,6 +169,14 @@ query.ViewXml = "<View Scope='RecursiveAll'>"
 	   + "</View>";
 
 ```
+
+|ID|Created|Author|Modified|Editor|_CopySource|CheckoutUser|FileLeafRef|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
+|1|26/12/2010 11:32|DEMO\dev|26/12/2010 11:32|DEMO\dev| | |Folder 1|
+|2|26/12/2010 11:32|DEMO\dev|26/12/2010 11:32|DEMO\dev| | |Folder 2|
+|3|26/12/2010 11:32|DEMO\dev|26/12/2010 11:32|DEMO\dev| | |Folder A|
+|10|30/01/2012 08:50|DEMO\dev|30/01/2012 08:50|DEMO\dev| | |Folder A1|
+|12|01/02/2012 05:42|DEMO\dev|01/02/2012 05:42|DEMO\dev| | |Folder A11|
 
 If you want to query only the files, the extra where clause can be changed as follows:
 
