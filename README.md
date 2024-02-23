@@ -4,11 +4,6 @@
 
 #### The Where clause
 
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
-
-
-####The Where clause
-
 The Where clause can range from very simple to very complex with one or more nested `<And>` or `<Or>` elements. The CAML for the Where clause has not been changed since SharePoint 2003, and can be used with the SharePoint Server Object Model and with the three Client Object Models. Also the Web Services are still there, for which you can also use CAML to retrieve and/or update list items.
 
 To retrieve list items from a SharePoint list, you have to define an instance of type CamlQuery, defined within the Microsoft.SharePoint.Client.CamlQuery namespace. You can specify your CAML query within the ViewXml property. This property is of type string but its content must be XML. The root element for this property is `<View>`. The Where clause needs to be embedded within a `<Query>` element.
