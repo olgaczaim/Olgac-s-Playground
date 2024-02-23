@@ -11,41 +11,41 @@ To retrieve list items from a SharePoint list, you have to define an instance of
 ```csharp
 Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
 query.ViewXml = "<View>"
-     + "<Query>"
-     + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
-     + "</Query>"
-     + "</View>";
+						   + "<Query>"
+						   + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
+						   + "</Query>"
+						   + "</View>";
 // execute the query
 ListItemCollection listItems = spList.GetItems(query);
 clientContext.Load(listItems);
 clientContext.ExecuteQuery();
 
 ```
-####OrderBy
+#### OrderBy
 The OrderBy element is the most simple one: you can define a sort order using one or more `<FieldRef>` elements that you include in the ViewXml property of the CamlQuery object:
 
 ```csharp
 query.ViewXml = "<View>"
-     + "<Query>"
-     + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
-     + "<OrderBy><FieldRef Name='City'/></OrderBy>"
-     + "</Query>"
-     + "</View>";
+						   + "<Query>"
+						   + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
+						   + "<OrderBy><FieldRef Name='City'/></OrderBy>"
+						   + "</Query>"
+						   + "</View>";
 
 ```
-####ViewFields
+#### ViewFields
 You can also limit the number of columns returned to the client, using the good old ViewFields element, which you can also include in the ViewXml property of the CamlQuery object:
 
 ```csharp
 CamlQuery query = new CamlQuery();
 query.ViewXml = "<View>"  
-     + "<Query>"
-     + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
-     + "</Query>"
-     + "<ViewFields>"
-     + "  <FieldRef Name='Title' /><FieldRef Name='City' />"
-     + "</ViewFields>"
-     + "</View>";
+						   + "<Query>"
+						   + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
+						   + "</Query>"
+						   + "<ViewFields>"
+						   + "  <FieldRef Name='Title' /><FieldRef Name='City' />"
+						   + "</ViewFields>"
+						   + "</View>";
 // execute the query
 ListItemCollection listItems = spList.GetItems(query);
 clientContext.Load(listItems);
@@ -66,34 +66,34 @@ clientContext.Load(listItems,
 clientContext.ExecuteQuery();
 
 ```
-####Query Options
+#### Query Options
 The different Query Options need to be handled a bit differently than with the SharePoint Server Object Model.
 
 The row limit can also be specified within the ViewXml property:
 
 ```csharp
 query.ViewXml = "<View>"
-     + "<Query>"
-     + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
-     + "<OrderBy><FieldRef Name='City'/></OrderBy>"
-     + "</Query>"
-     + "<RowLimit>5</RowLimit>"
-     + "</View>";
+						   + "<Query>"
+						   + "<Where><Eq><FieldRef Name='Country' /><Value Type='Text'>Belgium</Value></Eq></Where>"
+						   + "<OrderBy><FieldRef Name='City'/></OrderBy>"
+						   + "</Query>"
+						   + "<RowLimit>5</RowLimit>"
+						   + "</View>";
 
 ```
 
-#####Dates in UTC
+##### Dates in UTC
 You can choose to return dates in UTC (Coordinated Universal Time)  by setting the DatesInUtc property of the CamlQuery instance:
 `query.DatesInUtc = true;`
 
-#####Include attachment URLs
+##### Include attachment URLs
 Using CAML you are able to know if list items have attachment by adding a w> element to the ViewFields element in the ViewXml property:
 ```csharp
 query.ViewXml = "<View>"  
-     + "<ViewFields>"
-     + "  <FieldRef Name='Title' /><FieldRef Name='City' /><FieldRef Name='Attachments' />"
-     + "</ViewFields>"
-     + "</View>";
+						   + "<ViewFields>"
+						   + "  <FieldRef Name='Title' /><FieldRef Name='City' /><FieldRef Name='Attachments' />"
+						   + "</ViewFields>"
+						   + "</View>";
 
 ```
 
@@ -114,14 +114,14 @@ ctx.Load(files, fs => fs.Include(f => f.ServerRelativeUrl));
 ctx.ExecuteQuery();
 
 ```
-#####Limitations
+##### Limitations
 Following CAML subtilities doesn’t seem to be working with the CamlQuery object of the .NET Client Object Model, although they exist when retrieving list items with the server object model and the SharePoint web services:
 - IncludeMandatoryColumns: this option also returns the required fields besides the other fields specified in the ViewFields property or element.
 - ExpandUserField: when you query a User field, you only see the login name of the user. When you indicate that you want to expand a user field, SharePoint will also return information like the user name and the email address.
 - IncludeAttachmentURLs: cfr. higher
 - IncludeAttachmentVersion:
 
-#####Files and folders options
+##### Files and folders options
 CAML for retrieving files and folders at different levels of a document library, is always a bit more complex. To make the explanation hereunder a bit more readable, I have created a document library with the following structure:
 
 You can easily query the files and folders in the root folder of a document library without having to use specific CAML elements. Only if you want to start querying the folder structure within a document library, you have to apply specific CAML.
@@ -137,12 +137,12 @@ If you want to query only the folders, you have to add an extra where clause:
 
 ```csharp
 query.ViewXml = "<View Scope='RecursiveAll'>"
-     + "<Query>"
-     + "   <Where>"
-     + "      <Eq><FieldRef Name='FSObjType' /><Value Type='Integer'>1</Value></Eq>"
-     + "   </Where>"
-     + "</Query>"
-     + "</View>";
+						   + "<Query>"
+						   + "   <Where>"
+						   + "      <Eq><FieldRef Name='FSObjType' /><Value Type='Integer'>1</Value></Eq>"
+						   + "   </Where>"
+						   + "</Query>"
+						   + "</View>";
 
 ```
 
@@ -150,12 +150,12 @@ If you want to query only the files, the extra where clause can be changed as fo
 
 ```csharp
 query.ViewXml = "<View Scope='RecursiveAll'>"
-     + "<Query>"
-     + "   <Where>"
-     + "      <Eq><FieldRef Name='FSObjType' /><Value Type='Integer'>0</Value></Eq>"
-     + "   </Where>"
-     + "</Query>"
-     + "</View>";
+						   + "<Query>"
+						   + "   <Where>"
+						   + "      <Eq><FieldRef Name='FSObjType' /><Value Type='Integer'>0</Value></Eq>"
+						   + "   </Where>"
+						   + "</Query>"
+						   + "</View>";
 
 ```
 
@@ -187,4 +187,3 @@ query.FolderServerRelativeUrl = "/Shared Documents/Folder 1";
 
 ```
 [Referance](https://karinebosch.wordpress.com/2012/02/03/caml-and-the-client-object-model/ "Referance")
-
