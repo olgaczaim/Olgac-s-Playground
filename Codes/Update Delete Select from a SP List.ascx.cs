@@ -54,18 +54,33 @@ SPSecurity.RunWithElevatedPrivileges(delegate ()
 //Delete List Item
 SPSecurity.RunWithElevatedPrivileges(delegate ()
 {
-   using (SPSite currentSite = new SPSite(thissite.ID))
-   {
-         using (SPWeb currentWeb = currentSite.OpenWeb(thisweb.ID))
-         {
+    using (SPSite currentSite = new SPSite(thissite.ID))
+    {
+        using (SPWeb currentWeb = currentSite.OpenWeb(thisweb.ID))
+        {
 
             SPList formList = currentWeb.Lists["DummyList"];
             currentWeb.AllowUnsafeUpdates = true;
-
+            
             SPListItem item = formList.GetItemById(1);
             item.Delete();
 
+        }
+    }
+});
 
-           }
+//Add to List
+SPSecurity.RunWithElevatedPrivileges(delegate ()
+{
+    using (SPSite currentSite = new SPSite(thissite.ID))
+    {
+        using (SPWeb currentWeb = currentSite.OpenWeb(thisweb.ID))
+        {
+            SPList formList = currentWeb.Lists["DummyList"];
+            
+            SPListItem newItem = formList.AddItem();
+            newItem["Title"] = "Test Title Content";
+            newItem.Update();
+        }
     }
 });
