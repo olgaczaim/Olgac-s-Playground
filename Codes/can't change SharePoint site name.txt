@@ -1,0 +1,41 @@
+Recently one of our SharePoint administrators wanted to change the address of a site via Site Settings / Title, description, and logo:
+
+He got an error with a correlation ID. Based on this ID we found this entry in the ULS logs:
+
+<nativehr>0x80004005</nativehr><nativestack></nativestack>The URL "/Sites/SiteX" is invalid. It may refer to a nonexistent file or folder, or refer to a valid file or folder that is not in the current Web.
+
+We had the same error message in the PowerShell console, when we tried to change the URL of the site from PowerShell, as described in this post:
+
+$web = Get-SPWeb http://YourSharePointServer/Sites/SiteX
+$web.ServerRelativeUrl = ‘/SiteX_New’
+$web.Update()
+
+The same symptoms, if we try to do it as described here:
+
+Get-SPWeb http://YourSharePointServer/Sites/SiteX | Set-SPWeb -RelativeUrl SiteX_New
+
+This message was of course wrong and misleading, as we could access the web both from the UI and from script. As it turned out, an other error preceded the one above in the logs:
+
+System.Data.SqlClient.SqlException (0x80131904): String or binary data would be truncated.     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)     at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)     at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)     at System.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)     at System.Data.SqlClient.SqlDataReader.TryHasMoreResults(Boolean& moreResults)     at System.Data.SqlClient.SqlDataReader.TryNextResult(Bool…
+…ean& more)     at System.Data.SqlClient.SqlDataReader.NextResult()     at Microsoft.SharePoint.SPSqlClient.ExecuteQueryInternal(Boolean retryfordeadlock)     at Microsoft.SharePoint.SPSqlClient.ExecuteQuery(Boolean retryfordeadlock)  ClientConnectionId:71163353-b397-4ada-99fd-be1e09547586  Error Number:8152,State:13,Class:16
+ExecuteQuery failed with original error 0x80131904
+
+The real problem was a few file URLs in one of the document libraries. The length of these URLs was already originally near the limit, and after changing the site URL with a longer path name would be these new URLs beyond the limitation.
+
+On the content database level, the properties of the documents are stored in the AllDocs table. The DirName field (nvarchar(256)) contains the full directory path, including the site structure (for example ‘Sites/SiteX/Documents/FolderA/FolderC‘). The LeafName field (nvarchar(128)) contains the file name (for example ‘DocumentZ.docx‘). It means, if a site URL is being changed, only the value of the DirName field would be changed, only in this field can be the new value truncated, if its length is beyond the 128 character limit.
+
+You can query the files having the longest DirName from the content database via the SQL query:
+
+SELECT TOP 100
+  [DirName], LEN([DirName]) AS DirNameLength
+  FROM [Your_Content_DB].[dbo].[AllDocs]
+  WHERE DirName LIKE ‘Sites/SiteX/%’
+  ORDER BY DirNameLength DESC
+
+If you happen to need the overall path (including both DirName and LeafName), you can query it as well:
+
+SELECT TOP 100
+  [DirName] + ‘/’ + [LeafName] AS Path, LEN([DirName] + ‘/’ + [LeafName]) AS PathLength
+  FROM [Your_Content_DB].[dbo].[AllDocs]
+  WHERE DirName LIKE ‘Sites/SiteX/%’
+  ORDER BY PathLength DESC
