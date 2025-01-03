@@ -55,3 +55,39 @@ $impFile.ReleaseLock($impFile.LockId)
 $file
 
 #>
+
+<# and another one enhanced from upper one #>
+<#
+$web = Get-SPWeb "http://contonso/site/"
+if($web){
+    $list = $web.Lists["Documents"]
+    $list.Title    
+    $item = $list.GetItemById(111)
+
+    $file = $item.File
+    $file.Name
+
+    $userId = $file.LockedByUser.ID
+    if($userId){
+        
+        $user = $web.AllUsers.GetByID($userId)
+        Write-Host "File is locked by user " $user.Name
+        
+        $impSite = New-Object Microsoft.SharePoint.SPSite($web.Url, $user.UserToken);
+        $impWeb = $impSite.OpenWeb();
+        $impList = $impWeb.Lists[$list.Title]
+        $impItem = $impList.GetItemById($item.ID)
+        $impFile = $impItem.File
+        #$impFile.ReleaseLock($impFile.LockId)
+        
+        Write-Host "Realesed lock for " $impFile.Name 
+
+
+    }else{
+        Write-Host "File is not locked"
+    }
+}else{
+    Write-Host "Web Not Found"
+}
+
+#>
