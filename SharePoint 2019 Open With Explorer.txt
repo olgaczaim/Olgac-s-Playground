@@ -1,0 +1,11 @@
+https://learn.microsoft.com/en-us/answers/questions/450422/sharepoint-2019-open-in-explorer
+
+SharePoint On-Prem tries to open One Drive instead of Show in File Explorer is due to uninstallation of WebDAV redirectory, you could learn more about this feature by:
+
+https://www.nicelabel.com/support/knowledge-base/article/installing-support-for-webdav-to-access-documents-inside-document-storage
+
+Go to server manager->add roles and features->install the WebDAV Redirector feature->restart the server.
+
+And then go to start->search “services”->start the “WebClient” service.
+
+Then you could use Open With Explorer as usual:
