@@ -19,6 +19,21 @@ PSConfig.exe -cmd upgrade -inplace b2b -force -cmd applicationcontent
 #-cmd applicationcontent ==> Manages Shared application content
 #-cmd installfeatures ==> registers the SharePoint features in the server farm that are located on this server.
 
+#Possible errors---------------------------------------------------------
+“Failed to upgrade SharePoint Products
+An exception of type Microsoft.SharePoint.PostSetupConfiguration.PostSetupConfigurationTaskException was thrown.  Additional exception information:
+Upgrade [SPContentDatabase Name=WSS_Content_47xxxxxxxxxxxxxxxxx…] failed. (EventID:an59t)
+Exception: The upgraded database schema doesn’t match the TargetSchema (EventID:an59t)
+Upgrade Timer job is exiting due to exception: Microsoft.SharePoint.Upgrade.SPUpgradeException: The upgraded database schema doesn’t match the TargetSchema”
+
+Start the SharePoint 2016 Management Shell. Note: you might have to be logged in as a farm admin to do this.
+Run the following command:
+Get-SPContentDatabase | ?{$_.NeedsUpgrade –eq $true} | Upgrade-SPContentDatabase -Confirm:$false
+Then restart the upgrade using this command:
+psconfig.exe -cmd upgrade -inplace b2b
+This will trigger an upgrade of the databases that was incomplete.
+#------------------------------------------------------------------
+
 #------------------------------------------------------------------
 #After the upgrade do not forget to remove mirroring db logging before the running conf wizard
 #------------------------------------------------------------------
