@@ -1,0 +1,76 @@
+# ===== DESCRIPTION =====
+# SharePoint survey Export to Excell does not have Created and Updated date columns.
+# This script allows you to export with such preferred columns
+# Export as JSON and import to Excell for lean result
+
+Add-PSSnapin Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue
+
+# ===== CONFIGURATION =====
+$siteUrl = "https://survey.contonso.com"
+$surveyName = "Test Survey"
+$outputPath = "C:\Export\SurveyAnswers.json"
+
+# ===== CONNECT TO SITE =====
+$web = Get-SPWeb $siteUrl
+$list = $web.Lists[$surveyName]
+
+if ($list -eq $null) {
+    Write-Host "Survey list '$surveyName' not found in site $siteUrl" -ForegroundColor Red
+    exit
+}
+
+Write-Host "Exporting survey '$surveyName'..." -ForegroundColor Cyan
+
+# ===== GET SURVEY DATA =====
+$items = $list.Items
+$results = @()
+
+foreach ($item in $items) {
+    $row = [ordered]@{}
+
+    # Add system fields with formatted dates
+    $row["ID"]       = $item["ID"]
+    $row["Created"]  = ($item["Created"]).ToString("dd.MM.yyyy HH:mm")
+    $row["Modified"] = ($item["Modified"]).ToString("dd.MM.yyyy HH:mm")
+    
+     # Resolve Author and Editor from IDs
+    if ($item["Author"] -ne $null) {
+        $authorVal = New-Object Microsoft.SharePoint.SPFieldUserValue($web, $item["Author"].ToString())
+        $row["Author"] = $authorVal.User.DisplayName
+    } elseif ($item["AuthorId"] -ne $null) {
+        $row["Author"] = $web.SiteUsers.GetByID($item["AuthorId"]).DisplayName
+    } else {
+        $row["Author"] = ""
+    }
+
+    if ($item["Editor"] -ne $null) {
+        $editorVal = New-Object Microsoft.SharePoint.SPFieldUserValue($web, $item["Editor"].ToString())
+        $row["Editor"] = $editorVal.User.DisplayName
+    } elseif ($item["EditorId"] -ne $null) {
+        $row["Editor"] = $web.SiteUsers.GetByID($item["EditorId"]).DisplayName
+    } else {
+        $row["Editor"] = ""
+    }
+
+    # Add survey questions/answers
+    foreach ($field in $list.Fields) {
+        if (-not $field.Hidden -and -not $field.ReadOnlyField -and `
+            $field.InternalName -notin @("Created","Modified","Author","Editor","Attachments","ContentType")) {
+
+            $value = $item[$field.InternalName]
+            if ($value -ne $null) {
+                $row[$field.Title] = $value.ToString()
+            }
+        }
+    }
+
+    $results += (New-Object PSObject -Property $row)
+}
+
+# ===== EXPORT TO JSON =====
+$results | ConvertTo-Json -Depth 5 | Out-File $outputPath -Encoding UTF8
+
+Write-Host "Export completed! File saved to $outputPath" -ForegroundColor Green
+
+# Cleanup
+$web.Dispose()
