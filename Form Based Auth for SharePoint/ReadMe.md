@@ -187,7 +187,7 @@ Save and close the file.
 
 ---
 
-####### 🛡️ Providers Explained
+###### 🛡️ Providers Explained
 
 | Setting | Purpose |
 |---------|---------|
@@ -201,7 +201,7 @@ Save and close the file.
 
 ---
 
-####### 🧠 Important Notes
+###### 🧠 Important Notes
 
 - All changes must be applied on **every SharePoint server** in the farm. 
 - Always **back up** config files before editing. 
@@ -211,26 +211,26 @@ Save and close the file.
 
 ##### 🛠 Step 3 — Configuring SharePoint
 
-1. Open **SharePoint Central Administration**. :contentReference[oaicite:3]{index=3}
-2. Go to **Application Management** → **Manage Web Applications**. :contentReference[oaicite:4]{index=4}
-3. Select the web application you want to enable FBA on. :contentReference[oaicite:5]{index=5}
-4. Click **Authentication Providers** on the ribbon. :contentReference[oaicite:6]{index=6}
-5. Choose the zone you wish to configure (e.g., **Default**). :contentReference[oaicite:7]{index=7}
+1. Open **SharePoint Central Administration**.
+2. Go to **Application Management** → **Manage Web Applications**.
+3. Select the web application you want to enable FBA on.
+4. Click **Authentication Providers** on the ribbon.
+5. Choose the zone you wish to configure (e.g., **Default**).
 6. On the Authentication Provider screen:
-   - **Check** the box for **Enable Forms Based Authentication (FBA)**. :contentReference[oaicite:8]{index=8}
-   - In the **ASP.NET Membership Provider Name** field enter your membership provider (e.g., `FBAMembershipProvider`). :contentReference[oaicite:9]{index=9}
-   - In the **ASP.NET Role Manager Name** field enter your role provider (e.g., `FBARoleProvider`). :contentReference[oaicite:10]{index=10}
-   - Optionally leave **Enable Windows Authentication** checked to allow both Windows and FBA logins. :contentReference[oaicite:11]{index=11}
-7. Click **Save**. :contentReference[oaicite:12]{index=12}
+   - **Check** the box for **Enable Forms Based Authentication (FBA)**.
+   - In the **ASP.NET Membership Provider Name** field enter your membership provider (e.g., `FBAMembershipProvider`).
+   - In the **ASP.NET Role Manager Name** field enter your role provider (e.g., `FBARoleProvider`).
+   - Optionally leave **Enable Windows Authentication** checked to allow both Windows and FBA logins.
+7. Click **Save**. 
 
-After saving, users attempting to access the site will see both authentication options (if Windows Auth is enabled) or just FBA if Windows Auth is disabled. :contentReference[oaicite:13]{index=13}
+After saving, users attempting to access the site will see both authentication options (if Windows Auth is enabled) or just FBA if Windows Auth is disabled.
 
 ---
 
 ## 💡 Notes
 
-- If **both Windows and Forms Authentication** are enabled, SharePoint will prompt users to choose which method to use when signing in. :contentReference[oaicite:14]{index=14}
-- At this stage, FBA may still not allow logins until users have been **added to the membership database**, which is covered in **Part 4** of the series. :contentReference[oaicite:15]{index=15}
+- If **both Windows and Forms Authentication** are enabled, SharePoint will prompt users to choose which method to use when signing in.
+- At this stage, FBA may still not allow logins until users have been **added to the membership database**, which is covered in **Part 4** of the series.
 
 ---
 
@@ -246,38 +246,81 @@ $sts.Update()
 iisreset
 ```
 
-This disables Modern Authentication for Office clients so they can authenticate via traditional claims (required for FBA to work with Office apps). :contentReference[oaicite:16]{index=16}
+This disables Modern Authentication for Office clients so they can authenticate via traditional claims (required for FBA to work with Office apps).
 
 ---
 
 
 ---
 
-### 2. Install (or Upgrade) the FBA Pack
+##### 🛠 Step 4 — Adding Users to the Membership Database
 
-1. Download and unzip the `Sharepoint201XFBAPack.X.X.X.zip` to a SharePoint server.
-2. Open **PowerShell** and go to the unzipped folder.
-3. Run the deploy command:
-```powershell
-.\deploy [Site Collection URL]
-```
-  Example:
-```powershell
-.\deploy http://demo2010a:13824/
-```
+1. Download the **SharePoint FBA Pack** for your SharePoint version from:
 
-4. The FBA Pack will be deployed to SharePoint and activated on the specified site collection. If the site collection url is omitted, you will need to manually activate the ‘Forms Based Authentication Management’ feature in each site collection you wish to use it.
-5. To uninstall, run:
-```powershell
-.\undeploy [Site Collection URL]
-```
+   ```
+   https://www.visigo.com/products/sharepoint-fba-pack
+   ```
 
-### Notes
-- **Ensure that the SharePoint Administration service is running prior to running the deployment scripts, or the deployment will fail.**
-- **Depending on your PowerShell security settings, it may prevent you from running the deployment scripts because they are not signed. To change the setting to allow unsigned scripts to run, run the following command:**
-```powershell
-Set-ExecutionPolicy Unrestricted
-```
+2. Unzip the package to a folder, e.g.:
 
+   ```
+   C:\deploy
+   ```
 
+3. Open **PowerShell** (run as Administrator) or the **SharePoint Management Shell**.
+4. Change directory to where you unzipped the FBA Pack:
 
+   ```powershell
+   cd C:\deploy
+   ```
+
+5. Run the deploy script:
+
+   ```powershell
+   .\deploy http://<YourSiteCollectionURL>
+   ```
+
+   - Replace `<YourSiteCollectionURL>` with the URL of the site collection where you want FBA management enabled.
+   - If you run `.\deploy` *without* a URL, you must manually activate the **Forms Based Authentication Management** feature in each site collection you need FBA in.
+
+6. If PowerShell blocks script execution, run:
+
+   ```powershell
+   Set-ExecutionPolicy Unrestricted
+   ```
+
+   then re-run the deploy script.
+
+7. Navigate to your site collection in SharePoint.
+8. Log in as a **Site Collection Administrator**.
+9. Go to **Site Settings**.
+10. You should now see additional FBA options, including:
+
+   - **FBA User Management**
+   - **FBA Role Management** (if roles are enabled)
+
+11. Click **FBA User Management**.
+12. Click **New User**.
+13. Fill in the form to create a new FBA user:
+
+   - Username
+   - Password
+   - Email
+   - (Optional) Role assignment
+   - (Optional) Membership review settings — if your FBA site configuration requires admin review, new users may need approval.
+
+14. Assign the FBA user to a SharePoint group so they have permissions to actually use the site.
+15. Log out of SharePoint.
+16. Go to your site’s login page.
+17. Choose **Forms Based Authentication**.
+18. Enter the FBA username and password you just created.
+
+You should now be able to log in using the FBA account.
+
+## 💡 Notes & Tips
+
+- **Permissions:** Make sure the application pool identity you use for your SharePoint web application has **db_owner** rights on the membership database. Otherwise management pages won’t work and logins may fail.
+- **Troubleshooting:** If you get **“A Membership Provider has not been configured correctly”**, double-check your *web.config* and *SecurityTokenService* config entries for the membership providers
+- **Self-Service:** In addition to user creation in the FBA Pack, there are web parts for **user registration**, **password change**, and **password recovery** if needed.
+
+---
