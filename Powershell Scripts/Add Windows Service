@@ -1,5 +1,0 @@
-#for delete
-sc delete "your service name"
-
-#for new service
-SC CREATE "your new service name" binpath= "C:\directory\some.exe"
